@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+image_dir="./image"
+image_name="${TODO_REPLACE_dojo_image_name}"
+
+set -u
+command="$1"
+case "${command}" in
+  build)
+      image_tag="${2:-temp}"
+      # run in a subshell to change current directory temporarily
+      ( set -x; cd "${image_dir}"; docker build -f Dockerfile -t "${image_name}:${image_tag}" .; )
+      # TODO: you may remove the following line if you don't use Alpine
+      ( set -x; cd "${image_dir}"; docker build -f Dockerfile.Alpine -t "${image_name}:${image_tag}-alpine" .; )
+      exit $?
+      ;;
+  test)
+      AIT_DOCKER_IMAGE_URL="${2:-${image_name}:temp}"
+      export AIT_DOCKER_IMAGE_URL
+      echo "DOJO_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_URL}\"" > Dojofile.to_be_tested
+      echo "DOJO_IDENTITY=\"$(pwd)/test/integration/identities/full\"" >> Dojofile.to_be_tested
+      echo "DOJO_WORK=$(pwd)/test/integration/test_work" >> Dojofile.to_be_tested
+      echo "Testing image: ${AIT_DOCKER_IMAGE_URL}"
+      time bats --pretty "$(pwd)/test/integration/bats"
+
+      # TODO: you may remove the following lines if you don't use Alpine
+      AIT_DOCKER_IMAGE_URL="${2:-${image_name}:temp-alpine}"
+      export AIT_DOCKER_IMAGE_URL
+      echo "DOJO_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_URL}\"" > Dojofile.to_be_tested
+      echo "DOJO_IDENTITY=\"$(pwd)/test/integration/identities/full\"" >> Dojofile.to_be_tested
+      echo "DOJO_WORK=$(pwd)/test/integration/test_work" >> Dojofile.to_be_tested
+      echo "Testing image: ${AIT_DOCKER_IMAGE_URL}"
+      time bats --pretty "$(pwd)/test/integration/bats"
+      ;;
+  example)
+      AIT_DOCKER_IMAGE_URL="${2:-${image_name}:temp-alpine}"
+      echo "DOJO_DOCKER_IMAGE=\"${AIT_DOCKER_IMAGE_URL}\"" > Dojofile.example
+      echo "DOJO_IDENTITY=\"$(pwd)/test/integration/identities/full\"" >> Dojofile.example
+      echo "DOJO_WORK=$(pwd)/test/integration/test_work" >> Dojofile.example
+      echo "Testing image: ${AIT_DOCKER_IMAGE_URL}"
+      dojo -c Dojofile.example
+      ;;
+  *)
+      echo "Invalid command: '${command}'"
+      exit 1
+      ;;
+esac
+set +e

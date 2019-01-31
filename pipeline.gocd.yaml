@@ -7,7 +7,7 @@ pipelines:
         git: "git@git.ai-traders.com:dojo/dojo-init.git"
         branch: master
     stages:
-      - build:
+      - test:
           clean_workspace: true
           jobs:
             build:
@@ -17,4 +17,15 @@ pipelines:
                   command: /bin/bash
                   arguments:
                     - -c
-                    - "echo \"pipeline not created yet\" && exit 1"
+                    - ./tasks test
+      - release:
+          clean_workspace: true
+          jobs:
+            build:
+              elastic_profile_id: w.c1.m1024.e5
+              tasks:
+               - exec:
+                  command: /bin/bash
+                  arguments:
+                    - -c
+                    - ./tasks release

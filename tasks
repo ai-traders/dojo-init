@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -Eeo pipefail
+if [[ ! -f ./releaser ]];then
+  wget --quiet http://http.archive.ai-traders.com/releaser/1.1.0/releaser || { echo "Cannot download realeser, ignoring"; }
+fi
+if [[ -f ./releaser ]];then
+  source ./releaser
+fi
+
+command="$1"
+case "${command}" in
+  set_version)
+      if [[ -n "$2" ]]; then
+        next_version="$2"
+      else
+        version=$(releaser::get_last_version_from_whole_changelog "${changelog_file}")
+        next_version=$(releaser::bump_patch_version "${version}")
+      fi
+      releaser::set_version_in_changelog "${changelog_file}" "${next_version}"
+      exit $?
+      ;;
+  verify_version)
+      releaser::verify_changelog_version
+      exit $?
+      ;;
+  test)
+      time bats --pretty ./test/integration/
+      exit $?
+      ;;
+  release)
+      ./tasks verify_version
+      version=$(releaser::get_last_version_from_whole_changelog "${changelog_file}")
+      git tag "${version}" && git push origin "${version}"
+      ;;
+  *)
+      echo "Invalid command: '${command}'"
+      exit 1
+      ;;
+esac
+set +e
