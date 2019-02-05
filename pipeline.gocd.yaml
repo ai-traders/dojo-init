@@ -10,7 +10,7 @@ pipelines:
       - test:
           clean_workspace: true
           jobs:
-            build:
+            test:
               elastic_profile_id: w.c1.m1024.e5
               tasks:
                - exec:
@@ -23,7 +23,7 @@ pipelines:
           secure_variables:
             GITHUB_TOKEN: "AES:9mQGklAskrmLBczL1b/UXQ==:u/Kt5dVTpXlDIOTN7ndS6SId01ryLQK+8OorJS7ZA8EECQvc04daQkLA+gRuzHNg"
           jobs:
-            build:
+            release:
               elastic_profile_id: w.c1.m1024.e5
               tasks:
                 - exec:
