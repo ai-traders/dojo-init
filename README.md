@@ -1,9 +1,12 @@
 # dojo-init
 
+Helps to create a [Dojo](https://github.com/ai-traders/dojo) docker image.
+
 ## Usage
 Run:
 ```
-git clone <this-repo> dojo-init
+git clone https://github.com/ai-traders/dojo-init.git
+cd dojo-init
 ./dojo-init <your_docker_repo_name> [<dojo_version>]
 ./dojo-init docker-myname-dojo
 ```
@@ -15,8 +18,12 @@ This will create a directory named: `docker-myname-dojo` with all the files need
 The directory will contain `Dockerfile` and `Dockerfile.Alpine` - you are free
  to decide which one to use (or whether to use both).
 
-There is also `tasks` file in `docker-myname-dojo` directory. It is used similarly
- to Makefile. Read `docker-myname-dojo/README.md` on how to use the `tasks` file.
+There is also `tasks` file in `docker-myname-dojo` directory. It is used
+ for operations, similarly to Makefile. Read `docker-myname-dojo/README.md`
+ on how to use the `tasks` file.
+
+## Install
+`git clone` this project.
 
 ## Development
 In order to run tests, install Bats:
