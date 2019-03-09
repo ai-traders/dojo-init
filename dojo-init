@@ -13,7 +13,7 @@ function get_dojo_last_version {
 }
 
 repo_name=${1?repo_name not set}
-dojo_git_url="http://git.ai-traders.com/dojo/dojo.git"
+dojo_git_url="https://github.com/ai-traders/dojo.git"
 if [[ "${repo_name}" != "docker-"*"-dojo" ]]; then
   echo "repo_name=${repo_name} does not match pattern docker-*-dojo, continue? (y/n)"
   read -n 1 x
@@ -38,9 +38,18 @@ set -u
 docker_image_name=$(echo ${repo_name} | sed "s/docker-//g")
 echo "Creating ${repo_name}..."
 cp -r templates ${repo_name}
-find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_dojo_git_url};${dojo_git_url};g" {} \;
-find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_dojo_version};${dojo_version};g" {} \;
-find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_dojo_image_name};${docker_image_name};g" {} \;
-find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_repo_name};${repo_name};g" {} \;
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform        
+	find ${repo_name} -type f -exec sed -i '' "s;\${TODO_REPLACE_dojo_git_url};${dojo_git_url};g" {} \;
+	find ${repo_name} -type f -exec sed -i '' "s;\${TODO_REPLACE_dojo_version};${dojo_version};g" {} \;
+	find ${repo_name} -type f -exec sed -i '' "s;\${TODO_REPLACE_dojo_image_name};${docker_image_name};g" {} \;
+	find ${repo_name} -type f -exec sed -i '' "s;\${TODO_REPLACE_repo_name};${repo_name};g" {} \;
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    # Do something under GNU/Linux platform
+	find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_dojo_git_url};${dojo_git_url};g" {} \;
+	find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_dojo_version};${dojo_version};g" {} \;
+	find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_dojo_image_name};${docker_image_name};g" {} \;
+	find ${repo_name} -type f -exec sed -i "s;\${TODO_REPLACE_repo_name};${repo_name};g" {} \;
+fi
 chmod +x ${repo_name}/tasks
 echo "Done"
