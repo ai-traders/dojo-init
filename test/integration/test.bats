@@ -31,11 +31,11 @@ function clean() {
   assert_equal "$status" 0
 
   run cat docker-myrepo-dojo/image/Dockerfile
-  assert_output --partial "-b 0.2.0 http://git.ai-traders.com/dojo/dojo.git"
+  assert_output --partial "-b 0.2.0 https://github.com/ai-traders/dojo.git"
   assert_equal "$status" 0
 
   run cat docker-myrepo-dojo/image/Dockerfile.Alpine
-  assert_output --partial "-b 0.2.0 http://git.ai-traders.com/dojo/dojo.git"
+  assert_output --partial "-b 0.2.0 https://github.com/ai-traders/dojo.git"
   assert_equal "$status" 0
 
   run cat docker-myrepo-dojo/tasks
